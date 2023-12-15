@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #00656b;
+            color: #000;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        input {
+            padding: 8px;
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #00656b;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px; /* Adicionado espaçamento acima do botão */
+        }
+
+        button:hover {
+            background-color: #004d52;
+        }
+    </style>
+    <title>Consulta de CEP</title>
+</head>
+<body>
+    <div id="container">
+        <h2>Consulta de CEP</h2>
+        <input type="text" id="cepInput" placeholder="Digite o CEP">
+        <button onclick="consultarCep()">Consultar</button>
+        <div id="resultado"></div>
+        <button onclick="limparResultado()">Nova Consulta</button>
+
+        <script>
+            function consultarCep() {
+                var cep = document.getElementById('cepInput').value;
+                var resultadoDiv = document.getElementById('resultado');
+
+                // Verifica se o CEP possui 8 dígitos
+                if (cep.length === 8 && !isNaN(cep)) {
+                    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.erro) {
+                                resultadoDiv.innerHTML = 'CEP não encontrado';
+                            } else {
+                                resultadoDiv.innerHTML = `
+                                    <p><strong>Logradouro:</strong> ${data.logradouro}</p>
+                                    <p><strong>Bairro:</strong> ${data.bairro}</p>
+                                    <p><strong>Cidade:</strong> ${data.localidade}</p>
+                                    <p><strong>Estado:</strong> ${data.uf}</p>
+                                `;
+                            }
+                        })
+                        .catch(error => {
+                            resultadoDiv.innerHTML = 'Erro na consulta';
+                        });
+                } else {
+                    resultadoDiv.innerHTML = 'CEP inválido';
+                }
+            }
+
+            function limparResultado() {
+                document.getElementById('cepInput').value = '';
+                document.getElementById('resultado').innerHTML = '';
+            }
+        </script>
+    </div>
+</body>
+</html>
